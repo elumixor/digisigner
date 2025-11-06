@@ -325,7 +325,7 @@ Reflect.defineProperty(Array.prototype, "mapLazy", {
 
 Reflect.defineProperty(Array.prototype, "unique", {
   value<T>(this: T[], comparator = (a: T, b: T) => a === b) {
-    const result = new Array<T>();
+    const result: T[] = [];
 
     // Go through the array...
     // If there is no such element in result
