@@ -1,6 +1,4 @@
-import { zip } from "./zip";
-
-export const __dummy = {};
+export {};
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -37,15 +35,6 @@ declare global {
      * Returns an array where each element is a sum of all elements up to that index
      */
     get cumsum(): number[];
-    /**
-     * Transposes a 2D array. Returns a new array.
-     */
-    get transposed(): T[];
-    /**
-     * Returns an element at the specified index. Indexes can be negative.
-     * @param index Index of an element
-     */
-    get(index: number): T;
     /**
      * Element-wise addition of two arrays
      * @param other Array to add
@@ -128,12 +117,6 @@ declare global {
      * @param element The element to remove.
      */
     remove(...element: T[]): void;
-    /**
-     * Sets the given element at the given index. Index can be negative.
-     * @param index The index to set the element at.
-     * @param value The element to set.
-     */
-    set(index: number, value: T): void;
     /**
      * Removes an element at the specified index
      */
@@ -241,31 +224,6 @@ Reflect.defineProperty(Array.prototype, "cumsum", {
       return current;
     });
   },
-  configurable: true,
-});
-
-Reflect.defineProperty(Array.prototype, "transposed", {
-  get<T>(this: T[][]) {
-    return Array.from(zip(...this));
-  },
-  configurable: true,
-});
-
-Reflect.defineProperty(Array.prototype, "get", {
-  value(this: unknown[], index: number) {
-    if (index >= 0) return this[index];
-
-    return this[this.length + index];
-  },
-  writable: false,
-  configurable: true,
-});
-
-Reflect.defineProperty(Array.prototype, "set", {
-  value<T>(this: T[], index: number, value: T) {
-    this[index >= 0 ? index : this.length + index] = value;
-  },
-  writable: false,
   configurable: true,
 });
 

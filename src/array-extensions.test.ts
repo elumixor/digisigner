@@ -48,19 +48,6 @@ describe("Array extensions - Accessors", () => {
       expect([1].nonEmpty).toBe(true);
     });
   });
-
-  describe("get", () => {
-    test("should get element at positive index", () => {
-      const arr = [1, 2, 3, 4, 5];
-      expect(arr.get(2)).toBe(3);
-    });
-
-    test("should get element at negative index", () => {
-      const arr = [1, 2, 3, 4, 5];
-      expect(arr.get(-1)).toBe(5);
-      expect(arr.get(-2)).toBe(4);
-    });
-  });
 });
 
 describe("Array extensions - Math operations", () => {
@@ -174,20 +161,6 @@ describe("Array extensions - Manipulation", () => {
     });
   });
 
-  describe("set", () => {
-    test("should set element at index", () => {
-      const arr = [1, 2, 3];
-      arr.set(1, 5);
-      expect(arr).toEqual([1, 5, 3]);
-    });
-
-    test("should handle negative index", () => {
-      const arr = [1, 2, 3];
-      arr.set(-1, 5);
-      expect(arr).toEqual([1, 2, 5]);
-    });
-  });
-
   describe("clear", () => {
     test("should clear array", () => {
       const arr = [1, 2, 3];
@@ -273,20 +246,6 @@ describe("Array extensions - Utilities", () => {
       const [evens, odds] = [1, 2, 3, 4, 5, 6].binarySplit((x) => x % 2 === 0);
       expect(evens).toEqual([2, 4, 6]);
       expect(odds).toEqual([1, 3, 5]);
-    });
-  });
-
-  describe("transposed", () => {
-    test("should transpose 2D array", () => {
-      const matrix = [
-        [1, 2, 3],
-        [4, 5, 6],
-      ];
-      expect(matrix.transposed).toEqual([
-        [1, 4],
-        [2, 5],
-        [3, 6],
-      ]);
     });
   });
 
