@@ -1,6 +1,34 @@
 import { describe, expect, test } from "bun:test";
 import "./array-extensions";
 
+describe("Array extensions - Static methods", () => {
+  describe("range", () => {
+    test("should create range from 0 to n (single argument)", () => {
+      expect(Array.range(5)).toEqual([0, 1, 2, 3, 4]);
+    });
+
+    test("should create range from start to end (two arguments)", () => {
+      expect(Array.range(2, 5)).toEqual([2, 3, 4]);
+    });
+
+    test("should return empty array when end equals start", () => {
+      expect(Array.range(3, 3)).toEqual([]);
+    });
+
+    test("should return empty array when end is less than start", () => {
+      expect(Array.range(5, 2)).toEqual([]);
+    });
+
+    test("should handle range(0)", () => {
+      expect(Array.range(0)).toEqual([]);
+    });
+
+    test("should handle negative start", () => {
+      expect(Array.range(-2, 2)).toEqual([-2, -1, 0, 1]);
+    });
+  });
+});
+
 describe("Array extensions - Accessors", () => {
   describe("first, second, last", () => {
     test("should get first element", () => {

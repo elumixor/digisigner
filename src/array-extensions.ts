@@ -2,6 +2,23 @@ export {};
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/naming-convention
+  interface ArrayConstructor {
+    /**
+     * Creates an array of numbers from `start` to `end` (exclusive)
+     * @param start The start of the range (inclusive)
+     * @param end The end of the range (exclusive)
+     * @returns An array of numbers [start, start+1, ..., end-1]
+     */
+    range(start: number, end: number): number[];
+    /**
+     * Creates an array of numbers from 0 to `end` (exclusive)
+     * @param end The end of the range (exclusive)
+     * @returns An array of numbers [0, 1, ..., end-1]
+     */
+    range(end: number): number[];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   interface ReadonlyArray<T> {
     /**
      * Returns a first element of an array
@@ -455,5 +472,17 @@ Reflect.defineProperty(Array.prototype, "argmin", {
 
     return minIndex;
   },
+  configurable: true,
+});
+
+Reflect.defineProperty(Array, "range", {
+  value(startOrEnd: number, end?: number) {
+    const start = end === undefined ? 0 : startOrEnd;
+    const stop = end === undefined ? startOrEnd : end;
+    const result: number[] = [];
+    for (let i = start; i < stop; i++) result.push(i);
+    return result;
+  },
+  writable: false,
   configurable: true,
 });
