@@ -1,103 +1,100 @@
-# Extensions
+# @elumixor/digi-signer
 
-[![Build](https://github.com/elumixor/extensions/actions/workflows/build.yml/badge.svg)](https://github.com/elumixor/extensions/actions/workflows/build.yml)
-[![Latest NPM version](https://img.shields.io/npm/v/@elumixor/extensions.svg)](https://www.npmjs.com/package/@elumixor/extensions)
-
-JavaScript/TypeScript extensions for Array, Set, and String prototypes.
+TypeScript wrapper for the DigiSigner API - a simple and efficient way to add electronic signatures to your documents.
 
 ## Installation
 
 ```bash
-npm install @elumixor/extensions
-```
-
-or
-
-```bash
-bun add @elumixor/extensions
+npm install @elumixor/digi-signer
+# or
+bun add @elumixor/digi-signer
+# or
+yarn add @elumixor/digi-signer
 ```
 
 ## Usage
 
-Simply import the package to add the extensions to the prototypes:
-
 ```typescript
-import "@elumixor/extensions";
+import { DigiSigner } from "@elumixor/digi-signer";
 
-// Array extensions
-const arr = [1, 2, 3, 4, 5];
-console.log(arr.first); // 1
-console.log(arr.last); // 5
-console.log(arr.sum); // 15
-console.log(arr.take(3)); // [1, 2, 3]
+// Initialize the client
+const signer = new DigiSigner(process.env.DIGISIGNER_API_KEY);
 
-// Set extensions
-const set = new Set([1, 2, 3]);
-console.log(set.first); // 1
-console.log(set.isEmpty); // false
-set.toggle(4); // adds 4
-set.toggle(4); // removes 4
+// Upload a document
+const document = await signer.uploadDocument(pdfBuffer, "contract.pdf");
 
-// String extensions
-console.log("hello".capitalize()); // "Hello"
+// Send signature request
+const signature = await signer.sendSignatureRequest({
+  documentId: document.document_id,
+  signers: [
+    { email: "john@example.com", name: "John Doe" },
+    { email: "jane@example.com", name: "Jane Smith" },
+  ],
+  fields: [
+    {
+      type: "signature",
+      page: 0,
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 50,
+      signer_id: 0,
+      required: true,
+    },
+  ],
+  subject: "Please sign this document",
+  message: "Please review and sign the attached document.",
+});
+
+console.log(signature.signing_urls); // { "john@example.com": "https://...", "jane@example.com": "https://..." }
+
+// Check signature status
+const status = await signer.getSignatureStatus(signature.signature_request_id);
+console.log(status.status); // "pending", "completed", etc.
 ```
 
-## Array Extensions
+## API
 
-### Accessors
-- `first` - Get/set first element
-- `second` - Get/set second element
-- `last` - Get/set last element
-- `isEmpty` - Check if array is empty
-- `nonEmpty` - Check if array is not empty
-- `get(index)` - Get element at index (supports negative indexes)
+### `DigiSigner`
 
-### Math Operations
-- `sum` - Sum all elements
-- `prod` - Multiply all elements
-- `cumsum` - Cumulative sum
-- `add(other)` - Element-wise addition
-- `sub(other)` - Element-wise subtraction
-- `max` - Get maximum element
-- `min` - Get minimum element
-- `argmax` - Get index of maximum element
-- `argmin` - Get index of minimum element
+Main client class for interacting with the DigiSigner API.
 
-### Manipulation
-- `remove(...elements)` - Remove elements from array
-- `removeAt(index)` - Remove element at index
-- `insertAt(element, index)` - Insert element at index
-- `set(index, value)` - Set element at index (supports negative indexes)
-- `clear()` - Clear array
-- `toggle(element)` - Add if not present, remove if present
-- `shuffle()` - Shuffle array in-place
+#### Constructor
 
-### Slicing
-- `take(n)` - Take first n elements
-- `skip(n)` - Skip first n elements
-- `takeLast(n)` - Take last n elements
+```typescript
+new DigiSigner(apiKey: string)
+```
 
-### Utilities
-- `count(element)` - Count occurrences of element
-- `unique(comparator?)` - Get unique elements
-- `binarySplit(predicate)` - Split into two arrays based on condition
-- `transposed` - Transpose 2D array
-- `pick()` - Pick random element
-- `pick(n)` - Pick n random elements with repetition
-- `pick(n, {repeat: false})` - Pick n random elements without repetition
-- `shuffled` - Generator of shuffled elements
-- `mapLazy(callback)` - Lazy map using generator
+#### Methods
 
-## Set Extensions
+##### `uploadDocument(buffer: Buffer, filename: string): Promise<DigiSignerDocument>`
 
-- `first` - Get first element
-- `isEmpty` - Check if set is empty
-- `nonEmpty` - Check if set is not empty
-- `toggle(value)` - Add if not present, remove if present
+Upload a PDF document to DigiSigner.
 
-## String Extensions
+##### `sendSignatureRequest(request: DigiSignerSignatureRequest): Promise<DigiSignerSignature>`
 
-- `capitalize()` - Capitalize first letter
+Send a signature request for a document.
+
+##### `getSignatureStatus(signatureRequestId: string): Promise<DigiSignerSignatureStatus>`
+
+Get the status of a signature request.
+
+## Types
+
+All TypeScript types are exported:
+
+- `DigiSignerSigner`
+- `DigiSignerField`
+- `DigiSignerSignatureRequest`
+- `DigiSignerDocument`
+- `DigiSignerSignature`
+- `DigiSignerSignatureStatus`
+
+## Getting an API Key
+
+1. Sign up at [DigiSigner](https://www.digisigner.com/)
+2. Navigate to API Settings
+3. Generate your API key
 
 ## License
 

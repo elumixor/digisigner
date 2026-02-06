@@ -1,12 +1,12 @@
 {
-  "name": "@elumixor/extensions",
-  "version": "2.1.5",
-  "description": "JavaScript/TypeScript extensions for Array, Set, and String prototypes",
+  "name": "@elumixor/digi-signer",
+  "version": "0.0.0",
+  "description": "TypeScript wrapper for DigiSigner API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/elumixor/extensions.git"
+    "url": "git+https://github.com/elumixor/digi-signer.git"
   },
   "files": [
     "./dist"
@@ -24,12 +24,11 @@
     "release:major": "npm version major -m \"Release v%s\" && git push --tags"
   },
   "keywords": [
-    "extensions",
-    "array",
-    "set",
-    "string",
-    "prototype",
-    "utilities"
+    "digisigner",
+    "esignature",
+    "document-signing",
+    "api-wrapper",
+    "typescript"
   ],
   "author": "",
   "license": "ISC",
