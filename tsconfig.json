@@ -25,5 +25,13 @@
     "noPropertyAccessFromIndexSignature": false,
 
     "outDir": "./dist"
-  }
+  },
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "node_modules",
+    "dist"
+  ]
 }
