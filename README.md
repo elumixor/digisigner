@@ -1,21 +1,21 @@
-# @elumixor/digi-signer
+# @elumixor/digisigner
 
 TypeScript wrapper for the DigiSigner API - a simple and efficient way to add electronic signatures to your documents.
 
 ## Installation
 
 ```bash
-npm install @elumixor/digi-signer
+npm install @elumixor/digisigner
 # or
-bun add @elumixor/digi-signer
+bun add @elumixor/digisigner
 # or
-yarn add @elumixor/digi-signer
+yarn add @elumixor/digisigner
 ```
 
 ## Usage
 
 ```typescript
-import { DigiSigner } from "@elumixor/digi-signer";
+import { DigiSigner } from "@elumixor/digisigner";
 
 // Initialize the client
 const signer = new DigiSigner(process.env.DIGISIGNER_API_KEY);
