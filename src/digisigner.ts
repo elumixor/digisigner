@@ -60,7 +60,7 @@ export class DigiSigner {
     return (await response.json()) as DigiSignerDocument;
   }
 
-  async sendSignatureRequest(request: DigiSignerSignatureRequest): Promise<DigiSignerSignature> {
+  sendSignatureRequest(request: DigiSignerSignatureRequest): Promise<DigiSignerSignature> {
     const signers = request.signers.map((signer, index) => ({
       email: signer.email,
       name: signer.name,
@@ -94,7 +94,7 @@ export class DigiSigner {
     return this.request<DigiSignerSignature>("POST", "/signature_requests", payload);
   }
 
-  async getSignatureStatus(signatureRequestId: string): Promise<DigiSignerSignatureStatus> {
+  getSignatureStatus(signatureRequestId: string): Promise<DigiSignerSignatureStatus> {
     return this.request<DigiSignerSignatureStatus>("GET", `/signature_requests/${signatureRequestId}`);
   }
 }
