@@ -62,6 +62,8 @@ jobs:
 
       - run: npm publish --access public
         if: steps.check.outputs.changed == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - run: 'echo "Package version has not been updated, skipping publish"'
         if: steps.check.outputs.changed == 'false'
