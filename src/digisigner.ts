@@ -1,27 +1,20 @@
-import type {
-  DigiSignerDocument,
-  DigiSignerSignature,
-  DigiSignerSignatureRequest,
-  DigiSignerSignatureStatus,
-} from "./types";
+import type { DocumentField, SignatureRequestOptions, SignatureRequestResponse, SignatureStatus } from "./types";
 
-const DIGISIGNER_API_URL = "https://api.digisigner.com/v1";
+const API_URL = "https://api.digisigner.com/v1";
 
 export class DigiSigner {
-  private readonly apiKey: string;
-
-  constructor(apiKey: string) {
+  constructor(private readonly apiKey: string) {
     if (!apiKey) throw new Error("DigiSigner API key is required");
-    this.apiKey = apiKey;
+  }
+
+  private get headers() {
+    return { Authorization: `Token ${this.apiKey}` };
   }
 
   private async request<T>(method: string, endpoint: string, body?: unknown): Promise<T> {
-    const response = await fetch(`${DIGISIGNER_API_URL}${endpoint}`, {
+    const response = await fetch(`${API_URL}${endpoint}`, {
       method,
-      headers: {
-        Authorization: `Token ${this.apiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers: { ...this.headers, "Content-Type": "application/json" },
       body: body ? JSON.stringify(body) : undefined,
     });
 
@@ -33,22 +26,20 @@ export class DigiSigner {
     return response.json() as T;
   }
 
-  private createFormData(buffer: Buffer, filename: string): FormData {
+  async upload(fileOrBuffer: string | Buffer, filename?: string): Promise<string> {
     const formData = new FormData();
-    const uint8Array = new Uint8Array(buffer);
-    const blob = new Blob([uint8Array], { type: "application/pdf" });
-    formData.append("file", blob, filename);
-    return formData;
-  }
 
-  async uploadDocument(buffer: Buffer, filename: string): Promise<DigiSignerDocument> {
-    const formData = this.createFormData(buffer, filename);
+    if (typeof fileOrBuffer === "string") {
+      const file = Bun.file(fileOrBuffer);
+      formData.append("file", file, fileOrBuffer);
+    } else {
+      const blob = new Blob([new Uint8Array(fileOrBuffer)], { type: "application/pdf" });
+      formData.append("file", blob, filename ?? "document.pdf");
+    }
 
-    const response = await fetch(`${DIGISIGNER_API_URL}/documents`, {
+    const response = await fetch(`${API_URL}/documents`, {
       method: "POST",
-      headers: {
-        Authorization: `Token ${this.apiKey}`,
-      },
+      headers: this.headers,
       body: formData,
     });
 
@@ -57,44 +48,62 @@ export class DigiSigner {
       throw new Error(`DigiSigner upload error: ${response.status} ${error}`);
     }
 
-    return (await response.json()) as DigiSignerDocument;
+    const result = (await response.json()) as { document_id: string };
+    return result.document_id;
   }
 
-  sendSignatureRequest(request: DigiSignerSignatureRequest): Promise<DigiSignerSignature> {
-    const signers = request.signers.map((signer, index) => ({
-      email: signer.email,
-      name: signer.name,
-      role: signer.role ?? `Signer ${index + 1}`,
-      order: index + 1,
-    }));
+  async download(documentId: string): Promise<Buffer> {
+    const response = await fetch(`${API_URL}/documents/${documentId}`, {
+      method: "GET",
+      headers: this.headers,
+    });
 
-    const fields = request.fields.map((field) => ({
-      type: field.type,
-      page: field.page,
-      rectangle: {
-        x: field.x,
-        y: field.y,
-        width: field.width,
-        height: field.height,
-      },
-      signer: field.signer_id,
-      label: field.label,
-      required: field.required ?? true,
-    }));
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`DigiSigner download error: ${response.status} ${error}`);
+    }
 
-    const payload = {
-      document_id: request.documentId,
-      signers,
-      fields,
-      subject: request.subject,
-      message: request.message,
+    return Buffer.from(await response.arrayBuffer());
+  }
+
+  sendSignatureRequest(documentId: string, options: SignatureRequestOptions): Promise<SignatureRequestResponse> {
+    return this.request<SignatureRequestResponse>("POST", "/signature_requests", {
+      documents: [
+        {
+          document_id: documentId,
+          signers: options.signers.map((signer) => ({
+            email: signer.email,
+            fields: signer.fields.map((field) => ({
+              page: field.page,
+              rectangle: field.rectangle,
+              type: field.type,
+            })),
+          })),
+        },
+      ],
+      subject: options.subject,
+      message: options.message,
       send_emails: true,
-    };
-
-    return this.request<DigiSignerSignature>("POST", "/signature_requests", payload);
+    });
   }
 
-  getSignatureStatus(signatureRequestId: string): Promise<DigiSignerSignatureStatus> {
-    return this.request<DigiSignerSignatureStatus>("GET", `/signature_requests/${signatureRequestId}`);
+  getStatus(signatureRequestId: string): Promise<SignatureStatus> {
+    return this.request<SignatureStatus>("GET", `/signature_requests/${signatureRequestId}`);
+  }
+
+  getFields(documentId: string): Promise<DocumentField[]> {
+    return this.request<DocumentField[]>("GET", `/documents/${documentId}/fields`);
+  }
+
+  async delete(documentId: string): Promise<void> {
+    const response = await fetch(`${API_URL}/documents/${documentId}`, {
+      method: "DELETE",
+      headers: this.headers,
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`DigiSigner delete error: ${response.status} ${error}`);
+    }
   }
 }

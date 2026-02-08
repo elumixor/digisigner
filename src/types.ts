@@ -1,41 +1,44 @@
-export interface DigiSignerSigner {
-  email: string;
-  name?: string;
-  role?: string;
-}
-
-export interface DigiSignerField {
-  type: "signature" | "text" | "date" | "checkbox";
+export interface SignerField {
   page: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  signer_id: number;
-  label?: string;
-  required?: boolean;
+  rectangle: [x: number, y: number, width: number, height: number];
+  type: "SIGNATURE" | "TEXT" | "DATE" | "CHECKBOX" | "INITIALS";
 }
 
-export interface DigiSignerSignatureRequest {
-  documentId: string;
-  signers: DigiSignerSigner[];
-  fields: DigiSignerField[];
+export interface Signer {
+  email: string;
+  fields: SignerField[];
+}
+
+export interface SignatureRequestOptions {
+  signers: Signer[];
   subject?: string;
   message?: string;
 }
 
-export interface DigiSignerDocument {
-  document_id: string;
-  name: string;
-}
-
-export interface DigiSignerSignature {
+export interface SignatureRequestResponse {
   signature_request_id: string;
-  signing_urls: Record<string, string>;
-  status: string;
 }
 
-export interface DigiSignerSignatureStatus {
-  status: string;
-  signed_document_url?: string;
+export interface SignerStatus {
+  email: string;
+  is_signature_completed: boolean;
+  sign_document_url: string;
+}
+
+export interface DocumentStatus {
+  document_id: string;
+  signers: SignerStatus[];
+}
+
+export interface SignatureStatus {
+  signature_request_id: string;
+  is_completed: boolean;
+  documents: DocumentStatus[];
+}
+
+export interface DocumentField {
+  api_id: string;
+  type: string;
+  page: number;
+  rectangle: [number, number, number, number];
 }
