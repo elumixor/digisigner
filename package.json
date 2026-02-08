@@ -1,6 +1,6 @@
 {
   "name": "@elumixor/digisigner",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "TypeScript wrapper for DigiSigner API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
