@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "bun run build:bundle && bun run build:declaration",
-    "build:bundle": "bun build ./src/index.ts --outdir ./dist",
+    "build:bundle": "bun build ./src/index.ts --outdir ./dist --target node",
     "build:declaration": "tsc --project tsconfig.json",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
