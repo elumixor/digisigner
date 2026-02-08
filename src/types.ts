@@ -1,32 +1,20 @@
-export interface DigiSignerSigner {
-  email: string;
-  name?: string;
-  role?: string;
-}
-
-export interface DigiSignerField {
-  type: "signature" | "text" | "date" | "checkbox";
+export interface SignatureField {
   page: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  signer_id: number;
+  rectangle: [number, number, number, number];
+  type: "SIGNATURE" | "TEXT" | "DATE" | "CHECKBOX";
   label?: string;
   required?: boolean;
 }
 
-export interface DigiSignerSignatureRequest {
-  documentId: string;
-  signers: DigiSignerSigner[];
-  fields: DigiSignerField[];
-  subject?: string;
-  message?: string;
+export interface Signer {
+  email: string;
+  fields: SignatureField[];
 }
 
-export interface DigiSignerDocument {
-  document_id: string;
-  name: string;
+export interface SignatureRequestData {
+  subject?: string;
+  message?: string;
+  signers: Signer[];
 }
 
 export interface DigiSignerSignature {
@@ -35,7 +23,19 @@ export interface DigiSignerSignature {
   status: string;
 }
 
+export interface SignatureStatusSigner {
+  email: string;
+  is_signature_completed: boolean;
+  sign_document_url: string;
+}
+
+export interface SignatureStatusDocument {
+  document_id: string;
+  signers: SignatureStatusSigner[];
+}
+
 export interface DigiSignerSignatureStatus {
-  status: string;
-  signed_document_url?: string;
+  signature_request_id: string;
+  is_completed: boolean;
+  documents: SignatureStatusDocument[];
 }
